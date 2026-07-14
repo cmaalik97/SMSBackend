@@ -95,8 +95,11 @@ All later requests: Authorization: Bearer <token>
                         ↓
 C# reads role from token → allows or blocks the action
 ```
-Sign Up (`POST /api/auth/register-admin`) creates Admin accounts only.  
+# Creating User 
+```
+# Sign Up (`POST /api/auth/register-admin`) creates Admin accounts only.  
 Teacher and Student logins are created by an Admin via `POST /api/users`.
+```
 ---
 # 🗄️ How Data Access Works (ADO.NET Pattern)
 Every repository follows the same 4-step pattern your teacher showed with WinForms — just inside a Web API instead of a Form:
@@ -125,12 +128,12 @@ while (r.Read()) { /* map row to C# object */ }
 ```
 # 📡 API Endpoints
 ```
-## Auth
+--Auth
 Method----------Endpoint----------------------Who---------Description.
 ** POST	        `/api/auth/login` 	         Everyone	    Login, returns JWT token
-** POST	      `/api/auth/register-admin`   	Public	        Register new Admin account
+** POST	      `/api/auth/register-admin`   	  Public	        Register new Admin account
 --------------
-## Dashboard
+-- Dashboard
 Method--------Endpoint----------------------Who----------Description
 ** GET	     `/api/dashboard/summary`	       Admin	    Summary numbers for dashboard cards
 --------------
@@ -145,7 +148,7 @@ Method---------Endpoint-------------Who-----------------Description
 ** PUT	        `/api/{table}/{id}`	Admin	Update a record
 ** DELETE	`/api/{table}/{id}`	Admin	Delete a record
 ```
-##Role rules applied automatically:
+# Role rules applied automatically:
 ```
 A Student calling `GET /api/students` only gets their own row
 A Teacher calling `GET /api/teachers` only gets their own row
