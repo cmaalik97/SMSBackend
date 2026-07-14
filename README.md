@@ -50,7 +50,7 @@ Student_Management_System/
 └── appsettings.json             # Connection string + JWT config (empty in production)
 ```
 ---
-⚙️ Setup & Run Locally
+# ⚙️ Setup & Run Locally
 ```bash
 # 1. Make sure SQL Server is running on your PC
 # 2. Run database/schema.sql in SSMS to create all tables
@@ -79,7 +79,7 @@ dotnet run
 # Swagger UI at http://localhost:5231/swagger
 ```
 ---
-🔐 Authentication Flow
+# 🔐 Authentication Flow
 ```
 React sends:  POST /api/auth/login  { email, password }
                         ↓
@@ -98,7 +98,7 @@ C# reads role from token → allows or blocks the action
 Sign Up (`POST /api/auth/register-admin`) creates Admin accounts only.  
 Teacher and Student logins are created by an Admin via `POST /api/users`.
 ---
-🗄️ How Data Access Works (ADO.NET Pattern)
+# 🗄️ How Data Access Works (ADO.NET Pattern)
 Every repository follows the same 4-step pattern your teacher showed with WinForms — just inside a Web API instead of a Form:
 ```csharp
 // 1. Open connection
@@ -116,40 +116,44 @@ conn.Open();
 using SqlDataReader r = cmd.ExecuteReader();
 while (r.Read()) { /* map row to C# object */ }
 ```
-Method	When to use
+# Method	When to use
 `cmd.ExecuteReader()`	SELECT — returns rows you loop through
 `cmd.ExecuteNonQuery()`	INSERT / UPDATE / DELETE — returns rows affected
 `cmd.ExecuteScalar()`	SELECT that returns one value (e.g. new ID after INSERT)
----
-📡 API Endpoints
-Auth
-Method	Endpoint	Who	Description
-POST	`/api/auth/login`	Everyone	Login, returns JWT token
-POST	`/api/auth/register-admin`	Public	Register new Admin account
-Dashboard
-Method	Endpoint	Who	Description
-GET	`/api/dashboard/summary`	Admin	Summary numbers for dashboard cards
-Students, Teachers, Classes, Subjects, Fees, Results, Users
-Each of these 7 tables follows the same REST pattern:
-Method	Endpoint	Who	Description
-GET	`/api/{table}`	Admin/Teacher	Get all records
-GET	`/api/{table}/{id}`	Admin/Teacher	Get one record
-POST	`/api/{table}`	Admin	Create a record
-PUT	`/api/{table}/{id}`	Admin	Update a record
-DELETE	`/api/{table}/{id}`	Admin	Delete a record
-Role rules applied automatically:
+----
+# 📡 API Endpoints
+## Auth
+Method----------Endpoint----------------------Who---------Description.
+** POST	        `/api/auth/login` 	         Everyone	    Login, returns JWT token
+** POST	      `/api/auth/register-admin`   	Public	        Register new Admin account
+--------------
+## Dashboard
+Method--------Endpoint----------------------Who----------Description
+** GET	     `/api/dashboard/summary`	       Admin	    Summary numbers for dashboard cards
+--------------
+
+# Students, Teachers, Classes, Subjects, Fees, Results, Users
+## Each of these 7 tables follows the same REST pattern:
+Method---------Endpoint-------------Who-----------------Description
+** GET	        `/api/{table}`	        Admin/Teacher	    Get all records
+** GET	        `/api/{table}/{id}` 	Admin/Teacher	    Get one record
+** POST	    `/api/{table}`	        Admin	            Create a record
+** PUT	        `/api/{table}/{id}`	Admin	Update a record
+** DELETE	`/api/{table}/{id}`	Admin	Delete a record
+##Role rules applied automatically:
 A Student calling `GET /api/students` only gets their own row
 A Teacher calling `GET /api/teachers` only gets their own row
 A Teacher calling `GET /api/subjects` only gets subjects assigned to them
 `POST/PUT/DELETE` on most tables = Admin only
-Attendance
-Method	Endpoint	Who	Description
-GET	`/api/attendance`	All logged-in	Admin/Teacher: all records. Student: own only
-POST	`/api/attendance`	Admin + Teacher	Mark attendance (auto-stamps TeacherId)
-PUT	`/api/attendance/{id}`	Admin + Teacher	Edit a record
-DELETE	`/api/attendance/{id}`	Admin	Delete a record
+---------
+# Attendance
+Method---------Endpoint------------------Who------------------Description
+** GET	        `/api/attendance`	    All logged-in	      Admin/Teacher: all records. Student: own only
+** POST     	`/api/attendance`	    Admin + Teacher	      Mark attendance (auto-stamps TeacherId)
+** PUT	        `/api/attendance/{id}`	Admin + Teacher	      Edit a record
+** DELETE	    `/api/attendance/{id}`	Admin	              Delete a record
 ---
-🛡️ Role-Based Access
+# 🛡️ Role-Based Access
 Roles are stored in the `Roles` table (Admin, Teacher, Student).  
 After login, the role is embedded inside the JWT token.  
 Controllers read it with:
@@ -163,33 +167,16 @@ And restrict actions with:
 [Authorize]                           // Any logged-in user
 ```
 ---
-✅ Built-in Validations
-Table	Validation
-Results	Duplicate blocked: same student + subject + exam type + year
-Attendance	Duplicate blocked: same student + date
-Fees	Duplicate blocked: same student + fee type + month
-Fees	Status auto-calculated: 0 paid=Unpaid, partial=Partial, full=Paid
-Users	Delete blocked if a Student or Teacher profile is still linked
+# ✅ Built-in Validations
+Table----------------------------------Validation
+**Results                            	Duplicate blocked: same student + subject + exam type + year
+**Attendance                            Duplicate blocked: same student + date
+**Fees	                                Duplicate blocked: same student + fee type + month
+**Fees                              	Status auto-calculated: 0 paid=Unpaid, partial=Partial, full=Paid
+**Users	                                Delete blocked if a Student or Teacher profile is still linked
 ---
-🌐 CORS
-The API only accepts requests from allowed origins.  
-Locally: `http://localhost:5173`  
-Deployed: set `ALLOWED_ORIGIN` environment variable to your Vercel URL.
----
-🚀 Deployment (Render.com — free)
-Add `Dockerfile` to the project root
-Push to GitHub
-Connect repo on render.com → select Docker
-Set these environment variables in Render:
-Key	Value
-`ConnectionStrings__Default`	Your somee.com connection string
-`Jwt__Key`	Any long random secret (min 32 chars)
-`Jwt__Issuer`	SMS.Api
-`Jwt__Audience`	SMS.Client
-`ALLOWED_ORIGIN`	https://your-app.vercel.app
-> Double underscore `__` replaces the colon `:` in .NET config keys.
----
-📦 NuGet Packages Used
+
+# 📦 NuGet Packages Used
 Package	Purpose
 `Microsoft.Data.SqlClient`	ADO.NET SQL Server driver
 `Microsoft.AspNetCore.Authentication.JwtBearer`	JWT authentication
